@@ -9,7 +9,7 @@ from datetime import date, datetime, timedelta
 from dateutil.parser import parse
 from QualtricsAPI.Setup import Credentials
 from QualtricsAPI.JSON import Parser
-from QualtricsAPI.Exceptions import Qualtrics500Error, Qualtrics503Error, Qualtrics504Error, Qualtrics400Error, Qualtrics401Error, Qualtrics403Error
+from QualtricsAPI.Exceptions import Qualtrics500Error, Qualtrics503Error, Qualtrics504Error, Qualtrics400Error, Qualtrics401Error, Qualtrics403Error, Qualtrics404Error
 import warnings
 import time
 
@@ -121,7 +121,10 @@ class Responses(Credentials):
             elif response['meta']['httpStatus'] == '403 - Forbidden':
                 raise Qualtrics403Error(
                     'Qualtrics Error\n(Http Error: 403 - Forbidden): The Qualtrics API user was authenticated and made a valid request, but is not authorized to access this requested resource.')
-        except (Qualtrics500Error, Qualtrics503Error, Qualtrics504Error, Qualtrics400Error, Qualtrics401Error, Qualtrics403Error) as e:
+            elif response['meta']['httpStatus'] == '404 - Not Found':
+                raise Qualtrics404Error(
+                    'Qualtrics Error\n(Http Error: 404 - Not Found): The Qualtrics API user was authenticated and made a valid request, but the survey could not be found. Verify the survey ID and ensure you have the necessary permissions.')
+        except (Qualtrics500Error, Qualtrics503Error, Qualtrics504Error, Qualtrics400Error, Qualtrics401Error, Qualtrics403Error, Qualtrics404Error) as e:
             return print(e)
         else:
             progress_id = response['result']['progressId']
@@ -161,7 +164,10 @@ class Responses(Credentials):
             elif check_response['meta']['httpStatus'] == '403 - Forbidden':
                 raise Qualtrics403Error(
                     'Qualtrics Error\n(Http Error: 403 - Forbidden): The Qualtrics API user was authenticated and made a valid request, but is not authorized to access this requested resource.')
-        except (Qualtrics500Error, Qualtrics503Error, Qualtrics504Error, Qualtrics400Error, Qualtrics401Error, Qualtrics403Error) as e:
+            elif check_response['meta']['httpStatus'] == '404 - Not Found':
+                raise Qualtrics404Error(
+                    'Qualtrics Error\n(Http Error: 404 - Not Found): The Qualtrics API user was authenticated and made a valid request, but the survey could not be found. Verify the survey ID and ensure you have the necessary permissions.')
+        except (Qualtrics500Error, Qualtrics503Error, Qualtrics504Error, Qualtrics400Error, Qualtrics401Error, Qualtrics403Error, Qualtrics404Error) as e:
             return print(e)
         else:
             download_url = url + is_file + '/file'
@@ -364,10 +370,14 @@ class Responses(Credentials):
             elif response['meta']['httpStatus'] == '403 - Forbidden':
                 raise Qualtrics403Error(
                     'Qualtrics Error\n(Http Error: 403 - Forbidden): The Qualtrics API user was authenticated and made a valid request, but is not authorized to access this requested resource.')
+            elif response['meta']['httpStatus'] == '404 - Not Found':
+                raise Qualtrics404Error(
+                    'Qualtrics Error\n(Http Error: 404 - Not Found): The Qualtrics API user was authenticated and made a valid request, but the survey could not be found. Verify the survey ID and ensure you have the necessary permissions.')
+            
         except (Qualtrics503Error, Qualtrics504Error) as e:
             # Recursive call to handle Internal Server Errors
             return self.get_survey_response(self, survey=survey, response=response, verbose=verbose)
-        except (Qualtrics500Error, Qualtrics400Error, Qualtrics401Error, Qualtrics403Error) as e:
+        except (Qualtrics500Error, Qualtrics400Error, Qualtrics401Error, Qualtrics403Error, Qualtrics404Error) as e:
             # Handle Authorization/Bad Request Errors
             return print(e)
         else:
@@ -407,10 +417,13 @@ class Responses(Credentials):
             elif response['meta']['httpStatus'] == '403 - Forbidden':
                 raise Qualtrics403Error(
                     'Qualtrics Error\n(Http Error: 403 - Forbidden): The Qualtrics API user was authenticated and made a valid request, but is not authorized to access this requested resource.')
+            elif response['meta']['httpStatus'] == '404 - Not Found':
+                raise Qualtrics404Error(
+                    'Qualtrics Error\n(Http Error: 404 - Not Found): The Qualtrics API user was authenticated and made a valid request, but the survey could not be found. Verify the survey ID and ensure you have the necessary permissions.')
         except (Qualtrics503Error, Qualtrics504Error) as e:
             # Recursive call to handle Internal Server Errors
             return self.create_survey_response(self, survey=survey, dynamic_payload=dynamic_payload, verify=verify)
-        except (Qualtrics500Error, Qualtrics400Error, Qualtrics401Error, Qualtrics403Error) as e:
+        except (Qualtrics500Error, Qualtrics400Error, Qualtrics401Error, Qualtrics403Error, Qualtrics404Error) as e:
             # Handle Authorization/Bad Request Errors
             return print(e, response['meta'])
         else:
@@ -462,10 +475,13 @@ class Responses(Credentials):
             elif response['meta']['httpStatus'] == '403 - Forbidden':
                 raise Qualtrics403Error(
                     'Qualtrics Error\n(Http Error: 403 - Forbidden): The Qualtrics API user was authenticated and made a valid request, but is not authorized to access this requested resource.')
+            elif response['meta']['httpStatus'] == '404 - Not Found':
+                raise Qualtrics404Error(
+                    'Qualtrics Error\n(Http Error: 404 - Not Found): The Qualtrics API user was authenticated and made a valid request, but the survey could not be found. Verify the survey ID and ensure you have the necessary permissions.')
         except (Qualtrics503Error, Qualtrics504Error) as e:
             # Recursive call to handle Internal Server Errors
             return self.update_survey_response_embedded_data(survey, response_id, embedded_data, reset_recorded_date)
-        except (Qualtrics500Error, Qualtrics400Error, Qualtrics401Error, Qualtrics403Error) as e:
+        except (Qualtrics500Error, Qualtrics400Error, Qualtrics401Error, Qualtrics403Error, Qualtrics404Error) as e:
             # Handle Authorization/Bad Request Errors
             return print(e, response['meta'])
         else:
@@ -589,10 +605,13 @@ class Responses(Credentials):
             elif response['meta']['httpStatus'] == '403 - Forbidden':
                 raise Qualtrics403Error(
                     'Qualtrics Error\n(Http Error: 403 - Forbidden): The Qualtrics API user was authenticated and made a valid request, but is not authorized to access this requested resource.')
+            elif response['meta']['httpStatus'] == '404 - Not Found':
+                raise Qualtrics404Error(
+                    'Qualtrics Error\n(Http Error: 404 - Not Found): The Qualtrics API user was authenticated and made a valid request, but the survey could not be found. Verify the survey ID and ensure you have the necessary permissions.')
         except (Qualtrics503Error, Qualtrics504Error) as e:
             # Potential strategy for retry logic for retryable internal errors
             return None
-        except (Qualtrics500Error, Qualtrics400Error, Qualtrics401Error, Qualtrics403Error) as e:
+        except (Qualtrics500Error, Qualtrics400Error, Qualtrics401Error, Qualtrics403Error, Qualtrics404Error) as e:
             return str(e), response['meta']
         return None
 
